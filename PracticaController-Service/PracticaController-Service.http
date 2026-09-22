@@ -1,0 +1,6 @@
+@PracticaController_Service_HostAddress = http://localhost:5047
+
+GET {{PracticaController_Service_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
