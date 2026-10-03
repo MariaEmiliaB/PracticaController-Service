@@ -1,8 +1,9 @@
 ﻿using PracticaController_Service.Entities;
+using PracticaController_Service.Repositories.Interfaces;
 
 namespace PracticaController_Service.Repositories.Implementations
 {
-    public class ProductRepository
+    public class ProductRepository : IProductRepository
     {
         private static List<Product> _products = new()
        {
@@ -42,5 +43,6 @@ namespace PracticaController_Service.Repositories.Implementations
         {
             _products.Remove(product);
         }
+       
     }
 }

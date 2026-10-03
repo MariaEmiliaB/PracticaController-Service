@@ -1,6 +1,15 @@
-﻿namespace PracticaController_Service.Repositories.Interfaces
+﻿using PracticaController_Service.Entities;
+
+namespace PracticaController_Service.Repositories.Interfaces
 {
     public interface IProductRepository
     {
+        List<Product> GetAllProducts();
+        Product? GetProductById(int id);
+        void AddProduct(Product product);
+        void UpdateProduct(Product product);
+        void DeleteProduct(Product product);
+
+
     }
 }
