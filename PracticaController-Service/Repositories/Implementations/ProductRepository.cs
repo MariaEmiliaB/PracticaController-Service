@@ -36,7 +36,7 @@ namespace PracticaController_Service.Repositories.Implementations
         public void UpdateProduct(Product product)
         {
             var productoOrig = GetProductById(product.Id);
-            _products.Remove(productoOrig);
+            _products.Remove(productoOrig!);
             _products.Add(product);
         }
         public void DeleteProduct(Product product)
