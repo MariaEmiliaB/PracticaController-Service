@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PracticaController_Service.Entities;
 using PracticaController_Service.Models.DTOs.Request;
 using PracticaController_Service.Models.DTOs.Responses;
-using PracticaController_Service.Services.Implementatios;
+using PracticaController_Service.Services.Interfaces;
 
 namespace PracticaController_Service.Controllers
 {
@@ -12,7 +11,12 @@ namespace PracticaController_Service.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private ProductService _service = new ProductService();
+        private readonly IProductService _service;
+
+        public ProductsController(IProductService service)
+        {
+            _service = service;
+        }
 
         [HttpGet]
         public ActionResult<List<ProductForReadDTO>> GetAll()
@@ -34,7 +38,7 @@ namespace PracticaController_Service.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Product> CreateProduct(ProductForCreateDto dto)
+        public ActionResult<ProductForReadDTO> CreateProduct([FromBody] ProductForCreateDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Name))
             {

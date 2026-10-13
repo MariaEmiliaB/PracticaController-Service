@@ -1,3 +1,7 @@
+using PracticaController_Service.Repositories.Implementations;
+using PracticaController_Service.Repositories.Interfaces;
+using PracticaController_Service.Services.Implementatios;
+using PracticaController_Service.Services.Interfaces;
 
 namespace PracticaController_Service
 {
@@ -13,12 +17,19 @@ namespace PracticaController_Service
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<IProductService, ProductService>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+                app.UseSwaggerUI(options =>
+                {
+                    options.SwaggerEndpoint("/openapi/v1.json", "PracticaController-Service v1");
+                });
             }
 
             app.UseHttpsRedirection();

@@ -1,15 +1,18 @@
-﻿using PracticaController_Service.Controllers;
-using PracticaController_Service.Entities;
+﻿using PracticaController_Service.Entities;
 using PracticaController_Service.Models.DTOs.Request;
 using PracticaController_Service.Models.DTOs.Responses;
-using PracticaController_Service.Repositories;
-using PracticaController_Service.Repositories.Implementations;
+using PracticaController_Service.Repositories.Interfaces;
 using PracticaController_Service.Services.Interfaces;
 namespace PracticaController_Service.Services.Implementatios
 {
     public class ProductService : IProductService
     {
-        private ProductRepository _repository = new ProductRepository();
+        private readonly IProductRepository _repository;
+
+        public ProductService(IProductRepository repository)
+        {
+            _repository = repository;
+        }
 
         public List<ProductForReadDTO> GetAllProducts()
         {
