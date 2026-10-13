@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using PracticaController_Service.Entities;
-
-namespace PracticaController_Service.Models.DTOs.Responses
+﻿namespace PracticaController_Service.Models.DTOs.Responses
 {
-    public class ProductForReadDTO
+    public class ProductForReadDto
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;

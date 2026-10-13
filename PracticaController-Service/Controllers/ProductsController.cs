@@ -1,28 +1,31 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PracticaController_Service.Entities;
-using PracticaController_Service.Models.DTOs.Request;
+using PracticaController_Service.Exceptions;
+using PracticaController_Service.Models.DTOs.Requests;
 using PracticaController_Service.Models.DTOs.Responses;
-using PracticaController_Service.Services.Implementatios;
+using PracticaController_Service.Services.Interfaces;
 
 namespace PracticaController_Service.Controllers
 {
-    
-   
     [Route("api/products")]
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private ProductService _service = new ProductService();
+        private readonly IProductService _service;
+
+        public ProductsController(IProductService service)
+        {
+            _service = service;
+        }
 
         [HttpGet]
-        public ActionResult<List<ProductForReadDTO>> GetAll()
+        public ActionResult<List<ProductForReadDto>> GetAll()
         {
             var productos = _service.GetAllProducts();
             return Ok(productos);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<ProductForReadDTO> GetById(int id)
+        public ActionResult<ProductForReadDto> GetById(int id)
         {
             var producto = _service.GetProductById(id);
             if (producto is null)
@@ -33,67 +36,73 @@ namespace PracticaController_Service.Controllers
             return Ok(producto);
         }
 
-        [HttpPost]
-        public ActionResult<Product> CreateProduct(ProductForCreateDto dto)
+        // GET /api/products/search?name=teclado
+        [HttpGet("search")]
+        public ActionResult<List<ProductForReadDto>> Search([FromQuery] string name)
         {
-            if (string.IsNullOrWhiteSpace(dto.Name))
-            {
-                return BadRequest("The name is required.");
-            }
-
-            if (dto.Price <= 0)
-            {
-                return BadRequest("The price must be greater than zero.");
-            }
-
-            var productoCreado = _service.CreateProduct(dto);
-
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = productoCreado.Id },
-                productoCreado);
+            // Sin coincidencias devuelve 200 con lista vacía: la búsqueda funcionó, no hubo resultados.
+            var productos = _service.SearchProductsByName(name);
+            return Ok(productos);
         }
 
+        // GET /api/products/stats
+        [HttpGet("stats")]
+        public ActionResult<ProductStatsDto> GetStats()
+        {
+            return Ok(_service.GetStats());
+        }
+
+        [HttpPost]
+        public ActionResult<ProductForReadDto> Create(ProductForCreateDto dto)
+        {
+            // Las validaciones de entrada (nombre y precio) las hace [ApiController]
+            // con las Data Annotations del DTO: si fallan, devuelve 400 sin entrar acá.
+            try
+            {
+                var productoCreado = _service.CreateProduct(dto);
+
+                return CreatedAtAction(
+                    nameof(GetById),
+                    new { id = productoCreado.Id },
+                    productoCreado);
+            }
+            catch (DuplicateProductNameException ex)
+            {
+                return Conflict(ex.Message);
+            }
+        }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] ProductForUpdateDto dto)
+        public IActionResult Update(int id, ProductForUpdateDto dto)
         {
             var productoExistente = _service.GetProductById(id);
-
             if (productoExistente is null)
             {
                 return NotFound();
             }
 
-            if (string.IsNullOrWhiteSpace(dto.Name))
+            try
             {
-                return BadRequest("The name is required.");
+                _service.UpdateProduct(id, dto);
+                return NoContent();
             }
-
-            if (dto.Price <= 0)
+            catch (DuplicateProductNameException ex)
             {
-                return BadRequest("The price must be greater than zero.");
+                return Conflict(ex.Message);
             }
-
-            _service.UpdateProduct(id, dto);
-
-            return NoContent(); 
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
             var productoExistente = _service.GetProductById(id);
-
             if (productoExistente is null)
             {
                 return NotFound();
             }
 
             _service.DeleteProduct(id);
-
-            return NoContent(); 
+            return NoContent();
         }
     }
 }
-

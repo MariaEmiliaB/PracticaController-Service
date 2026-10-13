@@ -1,6 +1,76 @@
-@PracticaController_Service_HostAddress = http://localhost:5047
+@host = http://localhost:5047
 
-GET {{PracticaController_Service_HostAddress}}/weatherforecast/
-Accept: application/json
+### Etapa 6 - GET todos (200 con los diez productos)
+GET {{host}}/api/products
 
-###
+### GET por id (200 con el monitor)
+GET {{host}}/api/products/3
+
+### GET id inexistente (404)
+GET {{host}}/api/products/999
+
+### POST producto nuevo (201 con Id asignado)
+POST {{host}}/api/products
+Content-Type: application/json
+
+{
+  "name": "Parlante portátil",
+  "price": 25000
+}
+
+### PUT existente (204)
+PUT {{host}}/api/products/1
+Content-Type: application/json
+
+{
+  "name": "Mouse inalámbrico Logitech",
+  "price": 4500
+}
+
+### PUT inexistente (404)
+PUT {{host}}/api/products/999
+Content-Type: application/json
+
+{
+  "name": "No existe",
+  "price": 100
+}
+
+### DELETE (204 la primera vez, 404 la segunda)
+DELETE {{host}}/api/products/2
+
+### Etapa 7.1 - Buscar por nombre (no distingue mayúsculas)
+GET {{host}}/api/products/search?name=teclado
+
+### Buscar sin coincidencias (200 con lista vacía)
+GET {{host}}/api/products/search?name=heladera
+
+### Etapa 7.2 - Estadísticas
+GET {{host}}/api/products/stats
+
+### Etapa 8 - POST inválido: nombre vacío (400)
+POST {{host}}/api/products
+Content-Type: application/json
+
+{
+  "name": "",
+  "price": 100
+}
+
+### POST inválido: precio en cero (400)
+POST {{host}}/api/products
+Content-Type: application/json
+
+{
+  "name": "Producto gratis",
+  "price": 0
+}
+
+### POST con nombre repetido (409 Conflict)
+POST {{host}}/api/products
+Content-Type: application/json
+
+{
+  "name": "webcam hd",
+  "price": 9000
+}

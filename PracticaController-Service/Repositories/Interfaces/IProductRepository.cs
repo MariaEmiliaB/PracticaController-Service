@@ -9,7 +9,6 @@ namespace PracticaController_Service.Repositories.Interfaces
         void AddProduct(Product product);
         void UpdateProduct(Product product);
         void DeleteProduct(Product product);
-
-
+        List<Product> SearchProductsByName(string name);
     }
 }
